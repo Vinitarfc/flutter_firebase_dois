@@ -19,7 +19,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Aprendendo Firebase com Flutter',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -39,11 +40,44 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   int _counter = 0;
 
   void _incrementCounter() {
     setState(() {
       _counter++;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _configureFirebaseListeners();
+  }
+
+  void _configureFirebaseListeners() {
+    _firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("onMessage: $message");
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("onMessageOpenedApp: $message");
+    });
+
+    _firebaseMessaging.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        print("getInitialMessage: $message");
+      }
+    });
+
+    _firebaseMessaging.onTokenRefresh.listen((String token) {
+      print("onTokenRefresh: $token");
     });
   }
 
