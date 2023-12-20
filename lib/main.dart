@@ -64,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("onMessage: $message");
+      //Abaixo abre um popup grande na frente do que o usuário estiver usando
+      _showNotificationDialog(message);
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -79,6 +81,33 @@ class _MyHomePageState extends State<MyHomePage> {
     _firebaseMessaging.onTokenRefresh.listen((String token) {
       print("onTokenRefresh: $token");
     });
+  }
+
+  void _showNotificationDialog(RemoteMessage message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Nova Notificação"),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Título: ${message.notification?.title ?? 'N/A'}"),
+              Text("Corpo: ${message.notification?.body ?? 'N/A'}"),
+              // Dá pra adicionar mais campos
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
